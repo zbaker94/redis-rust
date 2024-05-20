@@ -67,14 +67,10 @@ pub fn main(){
         ("$5\r\nHello", RedisDataType::SimpleError("Invalid format. String must end with '\r\n'. Passed string ends with o".to_string()), "bulk string no crlf at end 1"),
         ("$5\r\nHello\r", RedisDataType::SimpleError("Invalid format. String must end with '\r\n'. Passed string ends with \r".to_string()), "bulk string no crlf at end 2"),
         ("$5\r\nHello\n", RedisDataType::SimpleError("Invalid format. String must end with '\r\n'. Passed string ends with \n".to_string()), "bulk string no crlf at end 3"),
-        // bulk string with no valid start character
         ("@5\r\nHello\r\n", RedisDataType::SimpleError("Invalid start character: @".to_string()), "bulk string with no valid start character 1"),
         ("5\r\nHello\r\n", RedisDataType::SimpleError("Invalid start character: 5".to_string()), "bulk string with no valid start character 2"),
-        // bulk string with no length
         ("$\r\nHello\r\n", RedisDataType::SimpleError("Error parsing bulk string length as integer: cannot parse integer from empty string".to_string()), "bulk string with no length"),
-        // bulk string with no string
         ("$5\r\n", RedisDataType::SimpleError("Invalid format. Bulk strings must contain a token for length and a token containing a string of that length".to_string()), "bulk string with no string"),
-        // bulk string with incorrect length
         ("$2\r\nHello\r\n", RedisDataType::SimpleError(format!("Length of string does not match specified length: {}", 5).to_string()), "bulk string with incorrect length"),
 
     ];
