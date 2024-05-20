@@ -1,6 +1,7 @@
 mod serialization;
 mod redis_data_type;
 mod server;
+mod command;
 #[cfg(test)]
 mod tests;
 
