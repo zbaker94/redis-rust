@@ -1,4 +1,6 @@
-use std::net::{TcpListener, TcpStream};
+use std::{io::{BufRead, BufReader, Read}, net::{TcpListener, TcpStream}};
+
+use crate::serialization::deserialize; 
 
 
 pub fn create_server(host: &str, port: &str) -> TcpListener{
@@ -13,9 +15,11 @@ pub fn create_server(host: &str, port: &str) -> TcpListener{
     println!("Server created at {}:{}", host, port);
     return listener.unwrap();
 }
-
 fn handle_client(stream: TcpStream) {
-    println!("New client: {}", stream.peer_addr().unwrap());
+    let reader = BufReader::new(stream);
+    let lines = reader.lines();
+    let mut command_string = String::new();
+    
 }
 
 pub fn listen_for_connections(listener: TcpListener) {
