@@ -113,9 +113,9 @@ fn redis_data_factory(encoded_string: &str) -> RedisDataType {
     }
 
     // check for crlf at end
-    // if !encoded_string.ends_with("\r\n") {
-    //     return RedisDataType::SimpleError(format!("Invalid format. String must end with '\r\n'. Passed string ends with {:?}", "").to_string())
-    // }
+    if !encoded_string.ends_with("\r\n") {
+        return RedisDataType::SimpleError(format!("Invalid format. String must end with '\r\n'. Passed string ends with {}", encoded_string.chars().last().unwrap()).to_string())
+    }
 
     eprintln!("Encoded string: {:?}", encoded_string);
     let tokens = encoded_string[1..].lines().collect::<Vec<&str>>();
