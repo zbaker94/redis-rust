@@ -15,7 +15,7 @@ impl fmt::Display for RedisDataType {
             RedisDataType::SimpleString(s) => write!(f, "{}", s),
             RedisDataType::SimpleError(s) => write!(f, "{}", s),
             RedisDataType::Integer(i) => write!(f, "{}", i),
-            RedisDataType::BulkString(s) => write!(f, "ERROR: {}", s),
+            RedisDataType::BulkString(s) => write!(f, "{}", s),
             RedisDataType::Array(a) => {
                 let mut result = String::new();
                 for item in a {
