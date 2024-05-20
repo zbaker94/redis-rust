@@ -5,11 +5,11 @@ This is meant as a learning exercise since I have been meaning to learn Rust for
 TODO:
 
 - [x] implement RESP V2 deserialization
-- [ ] implement RESP V2 serialization
+- [x] implement RESP V2 serialization
 - [ ] redis lite server
 - [ ] SET command
 - [ ] concurrent clients
-- [ ] automated tests
+- [x] automated tests
 - [ ] EX, PX EAXT PXAT expiry options for SET command
 - [ ] extend command support
 - [ ] CI/CD support for releases (github actions)
