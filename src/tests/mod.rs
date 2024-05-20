@@ -4,16 +4,17 @@ fn test_deserialize(string: &str, expected_result: RedisDataType){
     let d = crate::serialization::deserialize::main(&string);
     eprintln!("test deserialize: {:?}", d);
     eprintln!("expected result: {:?}", expected_result);
-    assert!(&d == &expected_result);
+    assert_eq!(&d, &expected_result);
 }
 
 fn test_serialize(data: RedisDataType, expected_result: &str){
     let s = crate::serialization::serialize::main(data);
     eprintln!("test serialize: {:?}", s);
     eprintln!("expected result: {:?}", expected_result);
-    assert!(&s == &expected_result);
+    assert_eq!(&s, &expected_result);
 }
 
+#[test]
 pub fn main(){
 
     let test_cases: Vec<(&str, RedisDataType, &str)> = vec![
