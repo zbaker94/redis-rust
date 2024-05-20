@@ -6,9 +6,11 @@ TODO:
 
 - [x] implement RESP V2 deserialization
 - [x] implement RESP V2 serialization
-- [ ] redis lite server
+- [x] redis lite server
+- [ ] PING command
+- [ ] ECHO command
 - [ ] SET command
-- [ ] concurrent clients
+- [?] concurrent clients
 - [x] automated tests
 - [ ] EX, PX EAXT PXAT expiry options for SET command
 - [ ] extend command support
