@@ -11,7 +11,11 @@ TODO:
 - [x] ECHO command
 - [ ] SET command
 - [?] concurrent clients
-- [x] automated tests
+- [x] automated tests for serialization happy path
+- [x] automated test for deserilize errors
+- [ ] automated tests for serialize errors
+- [ ] automated tests for command happy path
+- [ ] automated tests for command errors
 - [ ] EX, PX EAXT PXAT expiry options for SET command
 - [ ] extend command support
 - [ ] CI/CD support for releases (github actions)
