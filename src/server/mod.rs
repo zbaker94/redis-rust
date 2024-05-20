@@ -1,6 +1,6 @@
 use std::{io::{Read, Write}, net::{TcpListener, TcpStream}, thread};
 
-use crate::{redis_data_type::RedisDataType, serialization::deserialize}; 
+use crate::{command, serialization::serialize}; 
 
 
 pub fn create_server(host: &str, port: &str) -> TcpListener{
@@ -31,11 +31,9 @@ fn handle_client(mut stream: TcpStream) {
                     message.push_str(text);
                     eprintln!("Received message: {}", message);
                 }
-                // Optionally, check for a termination condition here
-                // For example, if the message ends with a newline or a special character
+                // terminate the loop if the message ends with a newline
                 if message.ends_with('\n') {
                     eprintln!("Received message: {}", message);
-                    
                     break;
                 }
             }
@@ -45,25 +43,13 @@ fn handle_client(mut stream: TcpStream) {
             }
         }
     }
-    let decoded = deserialize::main(&message);
-    eprintln!("Decoded message: {:?}", decoded);
-    // parse the message
-    if let RedisDataType::SimpleString(_) = decoded {
-        eprintln!("SimpleString");
-    } else if let RedisDataType::SimpleError(_) = decoded {
-        eprintln!("SimpleError");
-    } else if let RedisDataType::Integer(_) = decoded {
-        eprintln!("Integer");
-    } else if let RedisDataType::BulkString(_) = decoded {
-        eprintln!("BulkString");
-    } else if let RedisDataType::Array(_) = decoded {
-        eprintln!("Array");
-    } else {
-        eprintln!("Invalid Redis Data Type");
-    }
-    // respond to the client
-    let response = "Message received!";
-    stream.write_all(response.as_bytes()).unwrap();
+
+    let response = command::main(&message);
+    eprintln!("Response: {:?}", response);
+    let response_string = serialize::main(response);
+    eprintln!("Response string: {:?}", response_string);
+
+    stream.write_all(response_string.as_bytes()).unwrap();
 }
 
 pub fn listen_for_connections(listener: TcpListener) {
