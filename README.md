@@ -7,8 +7,8 @@ TODO:
 - [x] implement RESP V2 deserialization
 - [x] implement RESP V2 serialization
 - [x] redis lite server
-- [ ] PING command
-- [ ] ECHO command
+- [x] PING command
+- [x] ECHO command
 - [ ] SET command
 - [?] concurrent clients
 - [x] automated tests
