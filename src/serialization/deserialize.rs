@@ -4,8 +4,26 @@ use crate::serialization::VALID_START_CHARS;
 use crate::serialization::AGG_TYPE_CHARS;
 
 
+    fn get_aggregate_sub_element(mut element: String, tokens: Vec<&str>, index: usize) -> (String, usize){
+        eprintln!("tokens at {}: {:?}", index, tokens[index]);
+        let agg_char = element.chars().next().unwrap();
+        // let agg_length = element[1..].parse::<usize>().unwrap();
+        let mut j = index + 1;
+        element += "\r\n";
+        if agg_char != '*' && agg_char != '%' {
+            element.push_str(&(tokens[j].to_owned() + "\r\n"));
+            j += 1;
+            return (element, j);
+        }
+        while j < tokens.len() && !&tokens[j].starts_with(agg_char){
+            eprintln!("Token: {:?}", tokens[j]);
+            element.push_str(&(tokens[j].to_owned() + "\r\n"));
+            j += 1;
+        }
 
-// Define a trait for SimpleString variant
+        return (element, j);
+    }
+
     fn simple_string(tokens: Vec<&str>) -> RedisDataType {
 
         return RedisDataType::SimpleString(tokens[0].to_string());
@@ -25,7 +43,11 @@ use crate::serialization::AGG_TYPE_CHARS;
     }
 
     fn bulk_string(tokens: Vec<&str>) -> RedisDataType {
-        let length = tokens[0].parse::<i64>();
+        if tokens.len() < 2 {
+            return RedisDataType::SimpleError("Invalid format. Bulk strings must contain a token for length and a token containing a string of that length".to_string());
+        }
+
+        let length = tokens[0].parse::<usize>();
 
         if length.is_err() {
             return RedisDataType::SimpleError(format!("Error parsing bulk string length as integer: {}", length.err().unwrap()));
@@ -34,6 +56,10 @@ use crate::serialization::AGG_TYPE_CHARS;
         let length = length.unwrap();
         if length < 1 {
             return RedisDataType::BulkString("".to_string()); //TODO how to handle returning null when length == -1
+        }
+
+        if tokens[1].len() < length {
+            return RedisDataType::SimpleError(format!("Length of {} specified, but string {} has length of {}", length, tokens[1], tokens[1].len()).to_string());
         }
 
         let string = tokens[1].to_string();
@@ -57,17 +83,12 @@ use crate::serialization::AGG_TYPE_CHARS;
             // combine sub array tokens into a single string starting from i and ending at i + array_length or the next array start
             let mut element = tokens[i].to_string();
             if AGG_TYPE_CHARS.contains(&element.chars().next().unwrap()){
-                let agg_char = element.chars().next().unwrap();
-                element += "\r\n";
-                let mut j = i + 1;
-                while j < tokens.len() && !&tokens[j].starts_with(agg_char){
-                    eprintln!("Token: {:?}", tokens[j]);
-                    element.push_str(&(tokens[j].to_owned() + "\r\n"));
-                    j += 1;
-                }
-                i = j;
+                let (agg_element, new_i) = get_aggregate_sub_element(element, tokens.clone(), i);
+                element = agg_element;
+                i = new_i;
             }else {
                 i += 1;
+                element.push_str("\r\n");
             }
             eprintln!("Element: {:?}", element);
             array.push(redis_data_factory(&element));
@@ -86,8 +107,14 @@ use crate::serialization::AGG_TYPE_CHARS;
 
 // Main function that returns a RedisDataType based on encoded string
 fn redis_data_factory(encoded_string: &str) -> RedisDataType {
+    // check for valid start character
     if !VALID_START_CHARS.contains(&encoded_string.chars().next().unwrap()) {
         return RedisDataType::SimpleError(format!("Invalid start character: {}", encoded_string.chars().next().unwrap()))
+    }
+
+    // check for crlf at end
+    if !encoded_string.ends_with("\r\n") {
+        return RedisDataType::SimpleError("Invalid format".to_string())
     }
 
     eprintln!("Encoded string: {:?}", encoded_string);
