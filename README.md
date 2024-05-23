@@ -10,6 +10,7 @@ TODO:
 - [x] PING command
 - [x] ECHO command
 - [ ] SET command
+- [ ] GET command
 - [?] concurrent clients
 - [x] automated tests for serialization happy path
 - [x] automated test for deserilize errors
